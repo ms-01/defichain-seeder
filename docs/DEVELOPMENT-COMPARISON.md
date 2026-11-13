@@ -167,3 +167,108 @@ and successful discovery of active DeFiChain nodes.
 
 No public DNS Seeder deployment should be considered
 complete until these requirements are satisfied.
+
+---
+
+## 11. November 13, 2026 – Updated Build Comparison
+
+This section supersedes earlier statements about
+unverified external crawling and P2P compatibility.
+
+### External Crawler Validation
+
+The adapted Development Seeder successfully completed
+a 180-second external crawler test.
+
+| Metric | Result |
+|---|---:|
+| Bootstrap peers | 6 |
+| Crawler threads | 6 |
+| Known peer addresses | 82 |
+| Connection attempts | 15 |
+| Available peers | 8 |
+| Validated peers in dump | 8 |
+
+Observed DeFiChain Core versions:
+
+- 4.2.2
+- 4.2.4
+- 4.2.5
+
+External P2P communication and peer discovery
+have been demonstrated.
+
+### Checkpoint Validation
+
+Reference height: 6,500,000
+
+Positive test: PASS.
+
+Negative test with modified checkpoint:
+EXPECTED REJECTION.
+
+These tests demonstrate the intended behavior
+for the tested peer and checkpoint.
+
+### Compiler Optimization Comparison
+
+Compiler: GCC 12.2.0
+
+| Property | O2 | O3 |
+|---|---|---|
+| Build | Successful | Successful |
+| Compiler warnings | 0 | 1 |
+| Binary size | 204 KB | 222 KB |
+| Sanitizer build | Successful | Not yet tested |
+| Runtime sanitizer validation | Pending | Not yet tested |
+| Performance benchmark | Not performed | Not performed |
+
+The O2 binary is approximately 8.1% smaller
+than the O3 binary.
+
+No performance advantage has yet been established
+for either optimization level.
+
+### Compiler Warning Investigation
+
+The original Development build produced:
+
+- `-Wstringop-overflow`
+- `-Wrestrict`
+
+The `-Wrestrict` warning no longer occurs after
+revising string construction in
+`CService::ToStringIPPort`.
+
+The remaining `-Wstringop-overflow` warning
+occurs in the serialization path involving
+`DataStream::write`.
+
+The warning was observed with O3 but not with
+O0 or O2 during isolated compilation tests.
+
+This difference does not prove that the
+underlying code is free from memory errors.
+
+### Sanitizer Status
+
+An O2 build with AddressSanitizer and
+UndefinedBehaviorSanitizer completed successfully.
+
+The first runtime attempt failed before crawler
+startup due to a `stdbuf` library-loading conflict.
+
+A corrected runtime test without `stdbuf`
+was initiated.
+
+Result: PENDING.
+
+### Next Steps
+
+1. Evaluate the O2 sanitizer runtime results.
+2. Repeat positive and negative checkpoint tests
+   with the validated O2 implementation.
+3. Investigate the remaining O3 warning.
+4. Compare O2 and O3 performance.
+5. Validate DNS functionality and database persistence.
+6. Complete production readiness checks.

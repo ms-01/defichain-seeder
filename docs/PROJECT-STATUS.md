@@ -185,3 +185,79 @@ as part of this repository.
 ---
 
 **Last updated:** November 13, 2026
+
+---
+
+## 10. November 13, 2026 – Development Progress
+
+This section updates the earlier project status following
+external P2P crawler and checkpoint validation.
+
+### Completed Validation
+
+| Component | Status |
+|---|---|
+| External P2P connections | Passed |
+| Six-node bootstrap test | Passed |
+| Peer discovery | Passed |
+| Peer address collection | Observed |
+| Multiple DeFiChain Core versions | Observed |
+| Positive checkpoint validation | Passed |
+| Negative checkpoint validation | Passed |
+| GCC O2 build | Passed |
+| GCC O3 build | Passed with warning |
+| ASan and UBSan build | Passed |
+
+The external crawler discovered 82 peer addresses,
+attempted 15 connections and identified 8 available peers
+during a 180-second test.
+
+Eight peers were recorded in the peer dump.
+
+The results demonstrate functional external peer discovery,
+but do not establish long-term reliability or production readiness.
+
+### Compiler Status
+
+GCC version: 12.2.0
+
+- O2 binary: 204 KB, no compiler warnings
+- O3 binary: 222 KB, one compiler warning
+- Remaining warning: `-Wstringop-overflow`
+- Previous `-Wrestrict` warning no longer occurs
+  after revising `CService::ToStringIPPort`
+
+The remaining warning requires further investigation.
+
+### Sanitizer Validation
+
+The O2 build with AddressSanitizer and
+UndefinedBehaviorSanitizer completed successfully.
+
+The initial runtime attempt was blocked by a
+library-loading conflict involving `stdbuf`.
+
+A corrected runtime test without `stdbuf`
+was initiated.
+
+Runtime result: Pending.
+
+### Remaining Priorities
+
+1. Complete sanitizer runtime validation.
+2. Validate peer database persistence and restart.
+3. Verify DNS responses and peer filtering.
+4. Investigate the remaining O3 warning.
+5. Complete operational security review.
+6. Configure and test the isolated systemd service.
+7. Perform extended stability testing.
+8. Prepare production DNS integration.
+
+### Production Status
+
+No public DNS Seeder deployment has been completed.
+
+Existing DeFiChain Masternode services remain separate
+from the development environment.
+
+The current development target is DeFiChain Core 4.2.5.
