@@ -50,3 +50,69 @@ Initial documentation: November 2026.
 Upstream baseline: 92d2b46
 Production reference: DeFiChain 4.2.5
 Test endpoint: 127.0.0.1:8555
+
+## Why This Project Is Complex
+
+A DeFiChain DNS Seeder is not simply a DNS server.
+
+It is a network discovery and validation service that must
+understand enough of the DeFiChain protocol to distinguish
+compatible and reachable blockchain nodes from unsuitable peers.
+
+The implementation combines several engineering disciplines:
+
+- Blockchain protocol compatibility and Proof-of-Stake headers
+- P2P networking, handshakes and peer discovery
+- Block hash and checkpoint validation
+- Concurrent C++ programming and controlled thread shutdown
+- Persistent peer databases and reliability classification
+- DNS infrastructure, IPv4 and IPv6
+- Local blockchain RPC integration and authentication
+- Linux service operation, monitoring and security
+
+### Architecture
+
+The intended production architecture consists of:
+
+1. A DeFiChain Core node providing blockchain state.
+2. An RPC client retrieving current chain information.
+3. A checkpoint manager maintaining validated reference blocks.
+4. A P2P crawler discovering and evaluating network peers.
+5. A persistent database tracking peer availability.
+6. A DNS service publishing eligible peer addresses.
+7. Operational monitoring and controlled service recovery.
+
+These components must work together reliably.
+
+### Engineering Challenges
+
+The Seeder must handle network failures, incompatible peers,
+changing blockchain heights, chain reorganizations and concurrent
+operations without distributing invalid or unreliable peer data.
+
+A successful build or isolated protocol test is therefore not
+equivalent to a production-ready network service.
+
+### Development Approach
+
+Development is performed incrementally, with reproducible tests
+and documented checkpoints.
+
+Experimental builds remain isolated from production DeFiChain
+services. Production deployment requires additional integration,
+security, network and stability validation.
+
+### Current Development Milestone
+
+As of November 14, 2026:
+
+- DeFiChain protocol compatibility has been tested.
+- External peer discovery has been demonstrated.
+- Controlled shutdown and final database snapshots have passed.
+- A standalone RPC client has passed initial checkpoint tests.
+- Integration of dynamic checkpoints into the Seeder is pending.
+- Public DNS operation has not been approved for production.
+
+The objective is a maintainable, independently operated
+DeFiChain peer discovery service that can support the network
+without depending on a single infrastructure provider.

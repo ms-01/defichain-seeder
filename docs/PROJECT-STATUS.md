@@ -261,3 +261,128 @@ Existing DeFiChain Masternode services remain separate
 from the development environment.
 
 The current development target is DeFiChain Core 4.2.5.
+
+## 11. November 14, 2026 – RPC and Shutdown Validation
+
+### Development Environment
+
+- Server: Masternode (v2202505142473340286)
+- DeFiChain Core reference: 4.2.5
+- Development branch: master
+- Local commit: ac8c7b6
+- Production daemon remained operational
+
+### RPC Client
+
+A standalone C++ RPC client was implemented using
+libcurl and json-c.
+
+Validated functionality:
+
+- [x] Local RPC connectivity
+- [x] Cookie-based authentication
+- [x] Blockchain height retrieval
+- [x] Best block hash retrieval
+- [x] Dynamic checkpoint calculation
+- [x] Negative parameter rejection
+- [x] Checkpoint consistency verification
+- [x] Compilation with -Wall -Wextra -Werror
+
+Test reference:
+
+- Chain height: 6595123
+- Checkpoint height: 6595023
+- Confirmation depth: 100
+
+Result: PASS for standalone RPC tests.
+
+The RPC client is not yet integrated into the Seeder.
+
+### Final Isolated Seeder Test
+
+Test date: November 14, 2026
+
+- Runtime: 60 seconds
+- Crawler threads: 2
+- DNS server: disabled
+- Test peer: 127.0.0.1:8555
+- Available peers: 0/1
+- Shutdown signal: SIGTERM
+- Exit code: 0
+- Final database snapshot: completed
+
+Result: PASS for startup, controlled shutdown and
+final database persistence.
+
+The loopback peer was not classified as an available
+public peer. This test does not establish external
+peer availability or production DNS readiness.
+
+### Outstanding Engineering Work
+
+1. Integrate RPC into the Seeder.
+2. Implement thread-safe checkpoint management.
+3. Test RPC failures and blockchain reorganizations.
+4. Validate database recovery after restart.
+5. Complete extended stability testing.
+6. Review outstanding compiler diagnostics.
+7. Complete DNS integration and security testing.
+8. Prepare isolated production deployment.
+
+### Production Readiness
+
+Production deployment: NOT APPROVED.
+
+The development environment remains separate from
+the running DeFiChain Core service.
+
+The local development commit has not been pushed
+to the public Seeder repository.
+
+## November 14, 2026 - Final Runtime Review
+
+The existing development and runtime test results
+were reviewed before preparing the GitHub update.
+
+### Verified Functionality
+
+- External P2P crawler discovered and validated peers.
+- Local DNS runtime registered test requests.
+- SIGINT and SIGTERM shutdown completed successfully.
+- Controlled shutdown wrote final database snapshots.
+- Startup failure handling returned exit status 1.
+- Standalone RPC client passed its functional tests.
+- ASan and UBSan instrumentation was confirmed.
+- A sanitized runtime test completed its internal
+  shutdown sequence without reported sanitizer errors.
+
+### Remaining Limitations
+
+- DNS A/AAAA response correctness is not yet verified.
+- RPC checkpoint functionality is not yet integrated.
+- Database recovery after restart is not yet verified.
+- A historical 28-byte LeakSanitizer finding remains
+  unresolved for its original startup-failure path.
+- Extended sanitizer and stability tests are pending.
+- Compiler diagnostics require final engineering review.
+- Public DNS deployment and monitoring are pending.
+
+### Infrastructure
+
+Development and testing:
+Masternode (v2202505142473340286)
+
+The production DeFiChain Core 4.2.5 daemon remained
+operational during the isolated tests.
+
+### Release Assessment
+
+Development status: FUNCTIONAL PROTOTYPE.
+
+Production readiness: NOT APPROVED.
+
+The current results support continued development
+and documentation, not public production deployment.
+
+Detailed evidence and test limitations are recorded
+in docs/TEST-RESULTS.md.

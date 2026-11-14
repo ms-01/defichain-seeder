@@ -194,3 +194,204 @@ Result: PENDING.
 - Review production service configuration
 - Investigate remaining O3 compiler warning
 - Perform extended stability testing
+
+## November 14, 2026 - RPC and Shutdown Validation
+
+### STEP 197.1 - Standalone RPC Client
+
+Environment:
+- DeFiChain Core 4.2.5
+- Local RPC endpoint: 127.0.0.1:8554
+- Authentication: RPC cookie
+- Implementation: C++20, libcurl, json-c
+- Compiler flags: -Wall -Wextra -Werror
+
+| Test | Result |
+|---|---|
+| RPC connection and authentication | PASS |
+| Retrieve blockchain state | PASS |
+| Retrieve block hash by height | PASS |
+| Calculate checkpoint at depth 100 | PASS |
+| Reject negative parameters | PASS |
+| Checkpoint consistency retry | PASS |
+
+Observed chain height: 6595123
+
+Checkpoint height: 6595023
+
+Checkpoint hash:
+eadbfbc97f7bfe5ed0da7d861f2869315a0b520ec53cca0757e2fd7a245ae7fa
+
+Result: PASS for standalone RPC functionality.
+
+Limitations:
+- RPC client not integrated into the Seeder.
+- Concurrent checkpoint access not validated.
+- RPC failure recovery and reorganizations not validated.
+
+### STEP 198 - Isolated Test Preparation
+
+- No existing Seeder process running.
+- Local P2P endpoint listening on port 8555.
+- Isolated test directory prepared.
+- Production DeFiChain daemon remained operational.
+
+Result: PASS.
+
+### STEP 199 - Controlled Shutdown
+
+Configuration:
+- DNS disabled
+- Bootstrap peer: 127.0.0.1
+- P2P port: 8555
+- Crawler threads: 2
+- Minimum chain height: 6594000
+- Test duration: 60 seconds
+
+| Test | Result |
+|---|---|
+| Seeder startup | PASS |
+| SIGTERM handling | PASS |
+| Worker thread shutdown | PASS |
+| Final database snapshot | PASS |
+| Exit code | 0 |
+| Available peers | 0/1 (1 tried) |
+
+Generated files:
+- dnsseed.dat: 146 bytes
+- dnsseed.dump: 135 bytes
+
+Result: PASS for controlled shutdown and snapshot creation.
+
+The loopback peer was not classified as publicly available.
+
+Database recovery after restart remains unverified.
+
+### STEP 200 - Local Development Commit
+
+Development server:
+Masternode (v2202505142473340286)
+
+Commit: ac8c7b6
+
+Files:
+- DEVELOPMENT_STATUS_2026-11-14.md
+- rpc-client-test.cpp
+- rpc_client.cpp
+- rpc_client.h
+
+Result: PASS for local Git checkpoint.
+
+The commit has not been pushed to the public repository.
+
+### Outstanding Validation
+
+- [ ] Integrate RPC client into Seeder.
+- [ ] Test concurrent checkpoint refresh.
+- [ ] Test RPC failures and chain reorganizations.
+- [ ] Validate database recovery after restart.
+- [ ] Complete sanitizer runtime validation.
+- [ ] Investigate outstanding compiler diagnostics.
+- [ ] Validate public DNS responses.
+- [ ] Complete extended stability and security testing.
+
+### Production Assessment
+
+Standalone RPC tests: PASS.
+
+Controlled shutdown: PASS.
+
+Final snapshot creation: PASS.
+
+Integrated checkpoint management: NOT VERIFIED.
+
+Database recovery: NOT VERIFIED.
+
+Public DNS deployment: NOT APPROVED.
+
+## November 14, 2026 - Additional Runtime Validation
+
+### STEP 209 - Runtime Log Review
+
+Historical test logs on the Masternode were reviewed.
+
+| Test | Observed result |
+|---|---|
+| Local DNS query test | 2 DNS requests |
+| DNS robustness test | 9 DNS requests |
+| SIGINT shutdown | Exit status 0 |
+| SIGTERM shutdown | Exit status 0 |
+| Startup failure handling | Exit status 1 |
+| Final database snapshot | Successfully written |
+
+Local DNS request handling was observed.
+Correct A/AAAA response contents remain unverified.
+
+### STEP 210-215 - Memory and Sanitizer Investigation
+
+A historical startup-failure test reported a
+28-byte memory leak through LeakSanitizer.
+
+The allocation trace references:
+CDnsSeedOpts::ParseCommandLine(), main.cpp:264.
+
+The relevant main.cpp files in the sanitized test
+directory and current development directory
+have identical SHA-256 checksums.
+
+The existing sanitized binary links against:
+- libasan.so.8
+- libubsan.so.1
+
+The historical leak has not been conclusively
+reproduced or resolved for the original failure path.
+
+### STEP 216 - Initial Sanitizer Retest
+
+Exit code: 1.
+
+The process terminated during command-line
+validation because the required -m parameter
+was missing.
+
+No sanitizer findings were reported.
+
+Result: INCONCLUSIVE.
+The intended DNS initialization failure was not reached.
+
+### STEP 217 - Sanitized Runtime Retest
+
+The sanitized Seeder started successfully.
+
+Observed:
+- DNS server started.
+- 13 DNS requests registered.
+- SIGTERM received.
+- Worker shutdown completed.
+- Final database snapshot written.
+- Internal shutdown exit status 0.
+- External timeout exit code 124.
+- No sanitizer findings reported.
+
+The requested port 0 was not used for binding;
+the Seeder started on its default DNS port 53.
+
+Result: PASS for observed controlled shutdown.
+Sanitizer findings: NONE REPORTED in this run.
+
+Limitations:
+- The original startup-failure path was not reproduced.
+- The historical 28-byte leak remains unresolved.
+- Correct DNS response contents remain unverified.
+- Extended sanitizer runtime testing remains pending.
+
+### Updated Production Assessment
+
+Local DNS runtime: TESTED.
+DNS response correctness: NOT VERIFIED.
+Controlled shutdown: PASS.
+Final database snapshot: PASS.
+Sanitized runtime: NO FINDINGS IN OBSERVED RUN.
+Historical memory leak: NOT CONCLUSIVELY RESOLVED.
+RPC integration: PENDING.
+Production deployment: NOT APPROVED.
